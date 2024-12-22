@@ -1,4 +1,4 @@
-from sound_manager import list_audio_files, get_audio_metadata, save_metadata_json
+from sound_manager import list_audio_files, get_audio_metadata, save_metadata_json, update_metadata_json, del_metadata_json
 import os
 
 def main():
@@ -8,13 +8,14 @@ def main():
         print("\n\nSound Library")
         print("1. 사운드 파일 탐색")
         print("2. 메타데이터 보기") # New!
-        print("3. 종료")
+        print("3. 메타데이터 관리") # New!
+        print("0. 종료")
         choice = input("선택하세요:" )
 
         # 1. 사운드 파일 탐색
         if choice == "1":
-            directory = input("오디오 파일이 있는 디렉토리 경로를 입력하세요: ")
-
+            # directory = input("오디오 파일이 있는 디렉토리 경로를 입력하세요: ")
+            directory = "C:\projects\sound_lib01\sounds"
             # 2. list_audio_file 호출 -> 오디오 파일 목록 가져오기
             audio_files = list_audio_files(directory)
 
@@ -53,7 +54,8 @@ def main():
 
         #2. Audio file 목록 출력
         elif choice == "2":
-            directory = input("오디오 파일이 있는 디렉토리 경로를 입력하세요: ")
+            # directory = input("오디오 파일이 있는 디렉토리 경로를 입력하세요: ")
+            directory = "C:\projects\sound_lib01\sounds"
             audio_files = list_audio_files(directory)
 
             if audio_files:
@@ -113,6 +115,44 @@ def main():
                 print("\n탐색된 파일이 없습니다.")
 
         elif choice == "3":
+            print("메타데이터 관리")
+            directory = "C:\projects\sound_lib01\sounds"
+            audio_files = list_audio_files(directory)
+
+            if audio_files:
+                print("\n오디오 파일: ")
+                for i, audio_file in enumerate(audio_files, start=1):
+                    print(f"{i}. {audio_file}")
+
+                # 사용자가 메타데이터를 조회할 파일을 선택하게 하기.
+                file_index = input("관리할 파일 번호를 선택하세요: ")
+                try:
+                    selected_file = audio_files[int(file_index) - 1]
+                    file_path = os.path.join(directory, selected_file)
+                    metadata_dict = get_audio_metadata(file_path)
+
+                    # 파일 이름과 확장자 출력
+                    print(f"\n선택한 파일: {selected_file[-3:]}")
+                    print()
+                    metadata_manage = input("C : 저장하시겠습니까?\nU : 수정하시겠습니까?\nD : 삭제하시겠습니까?\n>>>")
+                    if metadata_manage == "c" or "C":
+                        save_metadata_json(metadata_dict)
+
+                    elif metadata_manage == "u" or "U":
+                        update_metadata_json(metadata_dict)
+
+                    elif metadata_manage == "d" or "D":
+                        del_metadata_json(metadata_dict)
+
+                except (ValueError, IndexError) as e:
+                    # print(f"error >>{e}")
+                    # ValueError나 IndexError가 발생했을 때만 처리
+                    print(f"Error: {e}")
+
+            else:
+                print("\n탐색된 파일이 없습니다.")
+
+        elif choice == "0":
             print("종료합니다.")
             break
 
