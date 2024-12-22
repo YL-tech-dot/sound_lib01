@@ -1,50 +1,9 @@
 import os
 import subprocess
 import json
-from pathlib import Path
+# from pathlib import Path
 # from pydub.utils import mediainfo # 사운드 파일 로드
-from pydub import AudioSegment
-
-def process_directory(directory, output_file="metadata.json"):
-    # 파일 탐색
-    supported_formats = (".mp3", ".wav", ".flac", ".ogg")
-    files = [
-        f for f in os.listdir(directory) if f.endswith(supported_formats)
-    ]
-    files = sorted(files)
-    cmd = [
-        "ffprobe",  # cmd 창에서 ffprobe 실행
-        "-v", "error",  # 로그 수준 설정, "error"로 설정하여 에러만 출력
-        # "-show_streams",
-        "-select_streams", "a:0",  # 첫 번째 오디오 스트림 선택 (a:0은 첫 번쨰 오디오 스트림을 의미)
-        "-show_entries", "stream=duration,channels,sample_rate,bit_rate",
-        # 추출할 항목 지정:duration,channels,sample_rate,bitrate
-        "-of", "json",  # JSON 형식으로 출력
-        directory  # 오디오 파일 경로 (파일 경로는 변수로 제공)
-    ]
-
-    # ffprobe 명령어 실행 후 결과 받기
-    result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-    # stdout 표준 출력은 pipe를 통해 캡처하도록 지정함
-    # stderr 표준 오류를 파이프 다른 프로세스와의 연결을 통해 캡처하도록 지정.
-    # python 3.7이상에선 text = True가 필요함.
-
-    # JSON 결과 파싱
-    metadata = json.loads(result.stdout)
-
-    # 오디오 정보 출력
-    duration = metadata['streams'][0]['duration']
-    channels = metadata['streams'][0]['channels']
-    sample_rate = metadata['streams'][0]['sample_rate']
-    bit_rate = metadata['streams'][0]['bit_rate']
-
-    print(f"파일: {directory}")
-    print(f"길이: {float(duration):.2f}초")
-    print(f"채널 수: {channels}")
-    print(f"샘플링 주파수: {sample_rate}Hz")
-    print(f"비트레이트: {bit_rate}bps")
-    # 메타데이터 추출
-    # JSON 저장
+# from pydub import AudioSegment
 
 def list_audio_files(directory):
     supported_formats = (".mp3", ".wav", ".flac", ".ogg")
@@ -68,9 +27,9 @@ def get_audio_metadata(file_path):
     cmd = [
         "ffprobe",  # cmd 창에서 ffprobe 실행
         "-v", "error",  # 로그 수준 설정, "error"로 설정하여 에러만 출력
-        # "-show_streams",
-        "-select_streams", "a:0",  # 첫 번째 오디오 스트림 선택 (a:0은 첫 번쨰 오디오 스트림을 의미)
-        "-show_entries", "stream=duration,channels,sample_rate,bit_rate",
+        "-show_streams",
+        # "-select_streams", "a:0",  # 첫 번째 오디오 스트림 선택 (a:0은 첫 번쨰 오디오 스트림을 의미)
+        # "-show_entries", "stream=duration,channels,sample_rate,bit_rate",
         # 추출할 항목 지정:duration,channels,sample_rate,bitrate
         "-of", "json",  # JSON 형식으로 출력
         file_path  # 오디오 파일 경로 (파일 경로는 변수로 제공)
@@ -81,28 +40,21 @@ def get_audio_metadata(file_path):
     # stdout 표준 출력은 pipe를 통해 캡처하도록 지정함
     # stderr 표준 오류를 파이프 다른 프로세스와의 연결을 통해 캡처하도록 지정.
     # python 3.7이상에선 text = True가 필요함.
-
+    # print("this result>>")
+    # print(result)
     # JSON 결과 파싱
     metadata_dict = json.loads(result.stdout)
-
+    # print("metadata_dict")
+    # print(['streams'][0])
     # 오디오 정보 출력
-    duration = metadata_dict['streams'][0]['duration']
-    channels = metadata_dict['streams'][0]['channels']
-    sample_rate = metadata_dict['streams'][0]['sample_rate']
-    bit_rate = metadata_dict['streams'][0]['bit_rate']
+    # duration = metadata_dict['streams'][0]['duration']
+    # channels = metadata_dict['streams'][0]['channels']
+    # sample_rate = metadata_dict['streams'][0]['sample_rate']
+    # bit_rate = metadata_dict['streams'][0]['bit_rate']
 
-    # 결과 안내
-    print(f"파일: {file_path}")
-    print(f"길이: {float(duration):.2f}초")
-    print(f"채널 수: {channels}")
-    print(f"샘플링 주파수: {sample_rate}Hz")
-    print(f"비트레이트: {bit_rate}bps")
-
-    return metadata_dict
-
-
-# file_path = r"C:/projects/sound_lib01/sounds/downfall-3-208028.mp3"
-# get_audio_metadata(file_path)
+    metadata = metadata_dict['streams'][0]
+    # print(metadata)
+    return metadata
 
 # 메타데이터를 json 파일로 저장하는 함수
 def save_metadata_json(metadata, file_name="metadata.json"):
