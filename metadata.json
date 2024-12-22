@@ -1,0 +1,76 @@
+{
+    "metadata.json": {
+        "deep-strange-whoosh-183845.mp3": {
+            "programs": [],
+            "stream_groups": [],
+            "streams": [
+                {
+                    "sample_rate": "48000",
+                    "channels": 2,
+                    "duration": "5.880000",
+                    "bit_rate": "256000"
+                }
+            ]
+        },
+        "downfall-3-208028.mp3": {
+            "programs": [],
+            "stream_groups": [],
+            "streams": [
+                {
+                    "sample_rate": "48000",
+                    "channels": 2,
+                    "duration": "10.032000",
+                    "bit_rate": "256000"
+                }
+            ]
+        },
+        "forest-sounds-259933.mp3": {
+            "programs": [],
+            "stream_groups": [],
+            "streams": [
+                {
+                    "sample_rate": "44100",
+                    "channels": 2,
+                    "duration": "304.300406",
+                    "bit_rate": "256000"
+                }
+            ]
+        },
+        "rainy-day-in-town-with-birds-singing-194011.mp3": {
+            "programs": [],
+            "stream_groups": [],
+            "streams": [
+                {
+                    "sample_rate": "44100",
+                    "channels": 2,
+                    "duration": "581.224469",
+                    "bit_rate": "256000"
+                }
+            ]
+        },
+        "relaxing-guitar-loop-v5-245859.mp3": {
+            "programs": [],
+            "stream_groups": [],
+            "streams": [
+                {
+                    "sample_rate": "44100",
+                    "channels": 2,
+                    "duration": "18.311812",
+                    "bit_rate": "256000"
+                }
+            ]
+        },
+        "small-wind-272153.mp3": {
+            "programs": [],
+            "stream_groups": [],
+            "streams": [
+                {
+                    "sample_rate": "44100",
+                    "channels": 2,
+                    "duration": "18.155094",
+                    "bit_rate": "256000"
+                }
+            ]
+        }
+    }
+}
