@@ -4,9 +4,10 @@ import subprocess
 import json
 from select_interface import get_and_print_metadata, pretty_print_dict # 메타데이터 출력 함수
 
-# 1개의 오디오 메타데이터 추출
+
 def get_audio_metadata(file_path: str):
     """
+    1개의 오디오 메타데이터 추출
     ffprobe.exe 를 cmd에서 명령어와 함께 실행시켜 선택된 오디오의 메타정보를 얻는다.
     :param file_path: 오디오파일 경로 : str
     :return: metadata_dict : dict
@@ -67,6 +68,8 @@ def save_metadata_json(metadata: dict, file_name="metadata0.json"):
     elif user_answer == "no":
         print("저장되지 않았습니다.")
 
+    print(f"---\n현재 파일: {existing_data}\n---")
+
 
 
 def update_metadata_json(metadata: dict, file_name="metadata0.json"):
@@ -80,6 +83,7 @@ def update_metadata_json(metadata: dict, file_name="metadata0.json"):
     if os.path.exists(file_name):
         with open(file_name, "r") as f:
             existing_data = json.load(f)  # json 파일 내용 ( json -> dict )
+
     else:
         existing_data = {}
         print("기존에 저장된 데이터가 없습니다.")
@@ -92,8 +96,8 @@ def update_metadata_json(metadata: dict, file_name="metadata0.json"):
 def del_metadata_json(delete_file=None, delete_key=None, file_name="metadata0.json"):
     """
     JSON 파일에서 특정 메타데이터 항목 또는 파일 이름 전체 삭제
-    :param delete_key: 삭제할 파일 이름(전체 데이터 삭제)
-    :param delete_field: 삭제할 메타데이터의 특정 필드 (예: 'duration')
+    :param delete_file: 삭제할 파일 이름(전체 데이터 삭제)
+    :param delete_key: 삭제할 메타데이터의 특정 필드 (예: 'duration')
     :param file_name: 메타데이터가 저장된 JSON 파일 이름
     :return: None
     """
@@ -103,24 +107,39 @@ def del_metadata_json(delete_file=None, delete_key=None, file_name="metadata0.js
             with open(file_name, "r") as f:
                 existing_data = json.load(f)
 
-            # 파일 이름 기반 전체 삭제
+            # 삭제 여부를 추적
+            is_deleted = False
+
+                # 파일 이름 기반 전체 삭제
             if delete_file:
                 if delete_file in existing_data:
                     del existing_data[delete_file]
                     print(f"'{delete_file}' 파일의 메타데이터가 삭제되었습니다.")
+                    is_deleted = True
                 else:
-                    print(f"'{delete_file}' 입력한 파일명을 찾을 수 없습니다.")
+                    print(f"'{delete_file}' 파일의 메타데이터를 찾을 수 없습니다.")
             # 특정 메타데이터 필드 삭제
             elif delete_key:
-                for key in existing_data:
+                for key in list(existing_data.keys()):
                     if delete_key in existing_data[key]:
                         del existing_data[key][delete_key]
                         print(f"'{key}' 파일의 '{delete_key}' 필드가 삭제되었습니다.")
+                        is_deleted = True
+                if not is_deleted:
+                    print(f"'{delete_key}' 키를 포함한 데이터를 찾을 수 없습니다.")
 
+            if is_deleted:
+                with open(file_name, "w") as f:
+                    json.dump(existing_data, f, indent=4)
+                    print(f"수정된 데이터가 '{file_name}' 파일에 저장되었습니다.")
             else:
-                print("잘못된 입력값입니다.")
-        else:
-            print("기존에 저장된 데이터가 없습니다.")
+                print("삭제 작업이 수행되지 않았습니다.")
 
-    except (ValueError, IndexError) as e:
-        print(f"error>>>{e}")
+        else:
+            print("기존에 저장된 JSON 파일이 없습니다.")
+    except (ValueError, IndexError, json.JSONDecodeError) as e:
+        print(f"에러 발생: {e}")
+
+# 테스트용
+# del_metadata_json(delete_key="codec_name", file_name="metadata0.json")
+
