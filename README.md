@@ -38,7 +38,7 @@ CLI 로 먼저 기본 기능을 구현하고 GUI (Graphical User Interface)로 �
    1. duration, channels, sample_rate, bit_rate
    2. codec, bit_depth
 ---
-인터페이스 추가하고 싶은 기능 : 
+인터페이스에 추가하고 싶은 기능 : 
 1. A, B 플랫폼에서 다운로드한 파일을 전체보기
 2. 음질 시각화
 3. 재생/멈춤/next/before/음질조절 버튼
@@ -46,3 +46,11 @@ CLI 로 먼저 기본 기능을 구현하고 GUI (Graphical User Interface)로 �
 4. 오디오 위에 마우스 커서를 올려놓을시 메모 view
 5. 오디오 위에 마우스 커서를 올려놓으면 표시 similar track 또는 same album track
     1. 비슷한 태그 검색, 제목, 랜덤 추천 기능 필요
+
+---
+
+### 업데이트 목록
+
+24.12.23 1. 메타데이터 출력 : 사용자가 특정 파일의 메타데이터를 확인할 수 있는 기능.
+
+24.12.26 메타데이터 CRUD 구현 및 에러 대응 기능 구현

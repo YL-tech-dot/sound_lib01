@@ -2,7 +2,7 @@
 import os
 import subprocess
 import json
-from select_interface import get_and_print_metadata, pretty_print_dict # 메타데이터 출력 함수
+from select_interface import get_and_print_metadata, pretty_print_dict  # 메타데이터 출력 함수
 
 
 def get_audio_metadata(file_path: str):
@@ -51,7 +51,7 @@ def save_metadata_json(metadata: dict, file_name="metadata0.json"):
         # numb += 1
         # file_name = file_name + f"0{numb}"
         with open(file_name, "r") as f:
-            existing_data = json.load(f) # json 파일 내용 ( json -> dict )
+            existing_data = json.load(f)  # json 파일 내용 ( json -> dict )
         print("파일이 기존에 저장되어있습니다. 새로 덮어쓰시겠습니까?")
     else:
         existing_data = {}
@@ -59,10 +59,10 @@ def save_metadata_json(metadata: dict, file_name="metadata0.json"):
 
     user_answer = input("yes / no\n>>>")
 
-    if user_answer == "yes": # metadata를 추가하고 파일로 저장
+    if user_answer == "yes":  # metadata를 추가하고 파일로 저장
         existing_data[file_name] = metadata
         with open(file_name, "w") as save:
-            json.dump(existing_data, save, indent=4) # python 객체를 json형식 문자열로 변환해 파일 저장 (dict -> json)
+            json.dump(existing_data, save, indent=4)  # python 객체를 json형식 문자열로 변환해 파일 저장 (dict -> json)
         print("새로 저장되었습니다.")
         print(f"{pretty_print_dict(existing_data)}")
     elif user_answer == "no":
@@ -71,8 +71,7 @@ def save_metadata_json(metadata: dict, file_name="metadata0.json"):
     print(f"---\n현재 파일: {existing_data}\n---")
 
 
-
-def update_metadata_json(metadata: dict, file_name="metadata0.json"):
+def update_metadata_json(file_path):
     """
         메타데이터를 json 파일로 저장하는 함수
         :param metadata: audio file's info
@@ -80,20 +79,23 @@ def update_metadata_json(metadata: dict, file_name="metadata0.json"):
         :return: None
         """
     # 읽기 전용
-    if os.path.exists(file_name):
-        with open(file_name, "r") as f:
-            existing_data = json.load(f)  # json 파일 내용 ( json -> dict )
+    metadata = get_audio_metadata(file_path)
+    if metadata:
+        pretty_print_dict(metadata)  # 수정항 목 view
+        key_to_update = input("수정할 key를 입력: ")
+        new_value = input(f"{key_to_update}의 새로운 값을 입력하세요: ")
 
+        if key_to_update in metadata:
+            metadata[key_to_update] = new_value
+            update_metadata_json(metadata)
+            print(f"{key_to_update}가 {new_value}로 수정되었습니다.")
+        else:
+            print("해당 key가 존재하지 않습니다.")
     else:
-        existing_data = {}
-        print("기존에 저장된 데이터가 없습니다.")
-    # metadata를 추가하고 파일로 저장
-    existing_data[file_name] = metadata
-    with open(file_name, "w") as f:
-        json.dump(existing_data, f, indent=4)  # python 객체를 json형식 문자열로 변환해 파일 저장 (dict -> json)
+        print("메타데이터를 찾을 수 없습니다.")
 
 
-def del_metadata_json(delete_file=None, delete_key=None, file_name="metadata0.json"):
+def del_metadata_json(file_path):
     """
     JSON 파일에서 특정 메타데이터 항목 또는 파일 이름 전체 삭제
     :param delete_file: 삭제할 파일 이름(전체 데이터 삭제)
@@ -101,45 +103,47 @@ def del_metadata_json(delete_file=None, delete_key=None, file_name="metadata0.js
     :param file_name: 메타데이터가 저장된 JSON 파일 이름
     :return: None
     """
-    try:
-        # JSON 파일 읽기
-        if os.path.exists(file_name):
-            with open(file_name, "r") as f:
-                existing_data = json.load(f)
+    metadata = get_audio_metadata(file_path)
+    if metadata:
+        pretty_print_dict(metadata)  # 삭제할 항목을 보기 좋게 출력
+        del_choice = input("삭제할 항목을 선택하세요. (key / field): ")
 
-            # 삭제 여부를 추적
-            is_deleted = False
-
-                # 파일 이름 기반 전체 삭제
-            if delete_file:
-                if delete_file in existing_data:
-                    del existing_data[delete_file]
-                    print(f"'{delete_file}' 파일의 메타데이터가 삭제되었습니다.")
-                    is_deleted = True
-                else:
-                    print(f"'{delete_file}' 파일의 메타데이터를 찾을 수 없습니다.")
-            # 특정 메타데이터 필드 삭제
-            elif delete_key:
-                for key in list(existing_data.keys()):
-                    if delete_key in existing_data[key]:
-                        del existing_data[key][delete_key]
-                        print(f"'{key}' 파일의 '{delete_key}' 필드가 삭제되었습니다.")
-                        is_deleted = True
-                if not is_deleted:
-                    print(f"'{delete_key}' 키를 포함한 데이터를 찾을 수 없습니다.")
-
-            if is_deleted:
-                with open(file_name, "w") as f:
-                    json.dump(existing_data, f, indent=4)
-                    print(f"수정된 데이터가 '{file_name}' 파일에 저장되었습니다.")
+        if del_choice == "key":
+            key_to_delete = input("삭제할 key를 입력하세요: ")
+            if key_to_delete in metadata:
+                del metadata[key_to_delete]
+                del_metadata_json(metadata)
+                print(f"{key_to_delete}가 삭제되었습니다.")
             else:
-                print("삭제 작업이 수행되지 않았습니다.")
+                print("해당 key가 존재하지 않습니다.")
+
+        elif del_choice == "field":
+            field_to_delete = input("삭제할 필드를 입력하세요: ")
+            if field_to_delete in metadata:
+                del metadata[field_to_delete]
+                del_metadata_json(metadata)
+                print(f"{field_to_delete}가 삭제되었습니다.")
+            else:
+                print("해당 필드가 존재하지 않습니다.")
 
         else:
-            print("기존에 저장된 JSON 파일이 없습니다.")
-    except (ValueError, IndexError, json.JSONDecodeError) as e:
-        print(f"에러 발생: {e}")
+            print("잘못된 선택입니다.")
+    else:
+        print("메타데이터를 찾을 수 없습니다.")
+
 
 # 테스트용
 # del_metadata_json(delete_key="codec_name", file_name="metadata0.json")
 
+def metadata_management(file_path):
+    print("\n\n메타데이터 관리")
+    metadata_action = input("저장(save) / 수정(update) / 삭제(del): ")
+
+    if metadata_action == "save":
+        save_metadata_json(file_path)
+    elif metadata_action == "update":
+        update_metadata_json(file_path)
+    elif metadata_action == "del":
+        del_metadata_json(file_path)
+    else:
+        print("잘못된 선택입니다. 다시 선택해주세요.")
