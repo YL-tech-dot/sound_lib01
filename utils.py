@@ -1,7 +1,7 @@
 # utils.py
 import os
 
-def list_audio_files(directory: str):
+def list_audio_files(directory: str) -> list[str]:
     """
     지정된 디렉토리에서 오디오 파일 목록을 반환합니다.
     """

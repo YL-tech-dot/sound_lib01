@@ -1,9 +1,8 @@
 from utils import list_audio_files
-from sound_manager import get_audio_metadata, save_metadata_json, update_metadata_json, del_metadata_json
-from select_interface import get_and_print_audio_files, pretty_print_dict, metadata_management
+from sound_manager import get_audio_metadata, metadata_management
+from select_interface import get_and_print_audio_files
 from prompt_toolkit import PromptSession
-from prompt_toolkit.completion import Completer, Completion
-from prompt_toolkit.completion import PathCompleter
+from prompt_toolkit.completion import Completer, Completion, PathCompleter
 import os
 
 
@@ -46,14 +45,15 @@ def main():
 
         # 1. 사운드 파일 탐색
         if choice == "1":
-            directory = get_directory_input("C:\\projects\\sound_lib01\\sounds")  # 자동 완성된 경로 입력
+            directory = get_directory_input(r"C:\\projects\\sound_lib01\\sounds")  # 자동 완성된 경로 입력
             audio_files = get_and_print_audio_files(directory)
             if not audio_files:
                 continue  # 반복문으로 돌아감
-
+            print("\n===Start===")
             for audio_file in audio_files:
-                file_path = os.path.join(directory, audio_file)
-                get_audio_metadata(file_path)
+                file_path = str(os.path.join(directory, audio_file))  # type을 명시적으로 str로 캐스팅
+                get_audio_metadata(file_path, audio_file)
+            print("===End===\n")
 
         # 2. Audio file 목록 출력
         elif choice == "2":
@@ -62,9 +62,9 @@ def main():
             file_index = input("\n조회할 파일 번호를 선택하세요: ")
 
             try:
-                selected_file = audio_files[int(file_index) - 1]
-                file_path = os.path.join(directory, selected_file)
-                get_audio_metadata(file_path)
+                audio_file = audio_files[int(file_index) - 1]
+                file_path = str(os.path.join(directory, audio_file))
+                get_audio_metadata(file_path, audio_file)
 
             except (ValueError, IndexError) as e:  # ValueError나 IndexError가 발생했을 때만 처리
                 print(f"Error: {e}")
@@ -85,7 +85,7 @@ def main():
                     selected_file = audio_files[int(file_index) - 1]
                     print(f"\n선택한 파일: {selected_file}")
 
-                    file_path = os.path.join(directory, selected_file)
+                    file_path = str(os.path.join(directory, selected_file))
                     metadata_management(file_path)
 
                 except (ValueError, IndexError) as e:
