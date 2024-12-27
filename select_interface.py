@@ -1,6 +1,6 @@
 # select_interface.py
 # 출력, 선택
-from utils import list_audio_files # utils에서 가져옴
+from utils import list_audio_files  # utils에서 가져옴
 
 
 def get_and_print_audio_files(directory: str) -> list[str]:
@@ -61,5 +61,5 @@ def pretty_print_dict(data: dict, indent: int = 0) -> None:
         else:
             if value:
                 print()
-                print("value>>",value)  # 줄바꿈 포함.
+                print("value>>", value)  # 줄바꿈 포함.
     print("-" * 10)

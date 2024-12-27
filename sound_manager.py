@@ -8,12 +8,8 @@ from select_interface import get_and_print_metadata, pretty_print_dict  # 메타
 def get_audio_metadata(file_path: str | bytes, audio_title: str) -> dict:
     """
     1개의 오디오 메타데이터 추출
-    ffprobe.exe 를 cmd에서 명령어와 함께 실행시켜 선택된 오디오의 메타정보를 얻는다.
     :param file_path: 오디오파일 경로 : str
     :return: metadata_dict : dict
-    stdout 표준 출력은 pipe를 통해 캡처하도록 지정함
-    stderr 표준 오류를 파이프 다른 프로세스와의 연결을 통해 캡처하도록 지정.
-    python 3.7이상에선 text = True가 필요하여 추가함.
     """
     cmd = [
         "ffprobe",  # cmd 창에서 ffprobe 실행
@@ -26,6 +22,7 @@ def get_audio_metadata(file_path: str | bytes, audio_title: str) -> dict:
     ]
     # ffprobe.exe 명령어 실행 후 결과 받기
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+
     # ffprobe 명령이 실패할 경우 subprocess.run의 result.stderr에 에러 메시지
     if result.returncode != 0:
         print(f"ffprobe 실행 실패: 파일 경로가 잘못되었거나 지원되지 않는 형식일 수 있습니다.\n{result.stderr}")
@@ -77,8 +74,6 @@ def create_metadata_json(metadata: dict, json_file_path: str) -> None:
     elif user_answer == "no":
         print("저장되지 않았습니다.")
 
-    # print(f"---\n현재 파일: {existing_data}\n---")
-
 
 def update_metadata_json(json_file_path: str) -> None:
     """
@@ -86,7 +81,7 @@ def update_metadata_json(json_file_path: str) -> None:
     :param json_file_path: 메타데이터가 저장된 JSON 파일 경로
     :return: None
     """
-    metadata = get_audio_metadata(json_file_path)
+    metadata = get_audio_metadata(json_file_path, json_file_path)
 
     if not metadata:
         print("메타데이터를 찾을 수 없습니다.")
@@ -144,9 +139,6 @@ def delete_metadata_json(json_file_path: str) -> None:
     else:
         print("해당 key가 존재하지 않습니다.")
 
-
-# 테스트용
-# del_metadata_json(delete_key="codec_name", json_file_path="metadata0.json")
 
 def metadata_management(file_path: str) -> None:
     print("\n\n메타데이터 관리")
