@@ -3,14 +3,20 @@
 from utils import list_audio_files  # utils에서 가져옴
 
 
-def get_and_print_audio_files(directory: str) -> list[str]:
+def get_and_print_audio_files(DIRECTORY: str) -> list[str]:
     """
     디렉토리에서 오디오 파일 목록을 출력하고 반환
     """
-    audio_files = list_audio_files(directory)
+    
+    # 그거 아십니까 사실 여기에서 가져올 경우
+    audio_files = list_audio_files(DIRECTORY)
+    
+    # 여기 전체는 필요가 없다는 거 
+    """
     if not audio_files:
         print("\n탐색된 파일이 없습니다.")
         return []
+    """
 
     print("\n오디오 파일: ")
     for i, audio_file in enumerate(audio_files, start=1):

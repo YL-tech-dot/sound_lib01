@@ -11,6 +11,11 @@ def get_audio_metadata(file_path: str | bytes, audio_title: str) -> dict:
     :param file_path: 오디오파일 경로 : str
     :return: metadata_dict : dict
     """
+    
+    # 어우 복잡해라
+    # 심지어 exec야
+    # 제 컴퓨터에 ffprobe 없었으면 어쩌려고 그러셨어요
+    # 시작할 때 ffprobe --version 같은 거라도 쳐서 버전 확인이라도 하셨어야지
     cmd = [
         "ffprobe",  # cmd 창에서 ffprobe 실행
         "-v", "error",  # 로그 수준 설정, "error"로 설정하여 에러만 출력
@@ -24,6 +29,7 @@ def get_audio_metadata(file_path: str | bytes, audio_title: str) -> dict:
     result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
 
     # ffprobe 명령이 실패할 경우 subprocess.run의 result.stderr에 에러 메시지
+    # 뭐야 있네
     if result.returncode != 0:
         print(f"ffprobe 실행 실패: 파일 경로가 잘못되었거나 지원되지 않는 형식일 수 있습니다.\n{result.stderr}")
         return {}
@@ -47,6 +53,8 @@ def get_audio_metadata(file_path: str | bytes, audio_title: str) -> dict:
 
 
 # 메타데이터를 json 파일로 저장하는 함수
+# 보통은 라이브러리로 만들 거면 file path를 넣는 거보단 file pointer 혹은 file 객체를 주는 것도 나쁘지 않습니다. 수고하시고요
+# 여기까지만 할래요. 개많네 이거
 def create_metadata_json(metadata: dict, json_file_path: str) -> None:
     """
     메타데이터를 json 파일로 저장하는 함수
