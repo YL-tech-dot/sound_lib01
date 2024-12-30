@@ -1,7 +1,8 @@
 # metadata_handler.py
-from constants import MAX_RECURSION_DEPTH # 전역변수도 import로 불러올 수가 있다.
+from constants import MAX_RECURSION_DEPTH  # 전역변수도 import로 불러올 수가 있다.
 import os
-
+import subprocess
+import json
 
 class MetadataHandler:
     def __init__(self, audios_dir):
@@ -56,8 +57,7 @@ class MetadataHandler:
         elif action == 'del':
             handler(json_file_path)  # self._handle_delete(json_file_path)
 
-    @staticmethod
-    def read_audio_metadata(audio_dir: str, audio_title: str) -> dict:
+    def read_audio_metadata(self, audio_dir: str, audio_title: str) -> dict:
         """
         오디오 메타데이터 추출
         :param audio_dir : 오디오 파일 경로
@@ -83,7 +83,7 @@ class MetadataHandler:
                 print("스트림 정보가 없습니다. 오디오 파일인지 확인하세요.")
                 return {}
             metadata = streams[0]
-            self.print_metadata(metadata, audio_title=audio_title)
+            self.print_metadata(metadata)
             return metadata
 
         except json.JSONDecodeError:
@@ -91,8 +91,7 @@ class MetadataHandler:
             return {}
 
     # 메타데이터를 json 파일로 저장하는 함수
-    @staticmethod
-    def create_metadata_json(metadata: dict, json_file_path: str) -> None:
+    def create_metadata_json(self, metadata: dict, json_file_path: str) -> None:
         """
         메타데이터를 json 파일로 저장하는 함수
         :param metadata: audio file's info
@@ -127,8 +126,7 @@ class MetadataHandler:
         except IOError as e:
             print(f"파일 쓰기 오류: {e}")
 
-    @staticmethod
-    def update_metadata_json(audio_dir: str, json_file_path: str) -> None:
+    def update_metadata_json(self, audio_dir: str, json_file_path: str) -> None:
         """
         메타데이터를 JSON 파일로 수정하는 함수
         :param audio_dir: 1개의 오디오 파일 경로
@@ -156,7 +154,7 @@ class MetadataHandler:
             metadata = json.load(f)
 
         # 메타데이터 출력 및 수정 시작
-        print_clean_metadata(metadata)  # 메타데이터 출력
+        self.print_clean_metadata(metadata)  # 메타데이터 출력
 
         # 수정할 key 찾기
         find_key = input("수정할 key를 입력하세요: ").strip()
@@ -238,7 +236,7 @@ class MetadataHandler:
         codec = next((metadata[key] for key in metadata if 'codec' in key), None)  # codec 관련 키 출력
         print(f"코덱: {codec if codec else '정보 없음'}")
 
-    def print_clean_metadata(metadata: dict, indent: int = 0) -> None:
+    def print_clean_metadata(self, metadata: dict, indent: int = 0) -> None:
         """
         오디오의 정제된 메타데이터를 계층적 구조로 출력하는 함수
         :param
@@ -267,7 +265,7 @@ class MetadataHandler:
             for key, value in metadata.items():
                 print(" " * indent + f"{key}: ", end="")
                 if isinstance(value, dict):  # isinstance = 값이 딕셔너리인지 확인하는 메서드
-                    print_clean_metadata(value, indent=indent + 4)  # 재귀 호출로 하위 딕셔너리 출력
+                    self.print_clean_metadata(value, indent=indent + 4)  # 재귀 호출로 하위 딕셔너리 출력
                 else:
                     if value:
                         print(value)  # 줄바꿈 포함.

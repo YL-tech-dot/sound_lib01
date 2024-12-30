@@ -34,9 +34,9 @@ class MenuHandler:
         :return:
         """
         audio_files = self.get_audio_files()  # audios_dir을 주지 않아도 한 객체 내에 있기때문에 알아서 변수를 사용할 것이다.
-        if not audio_files:
-            print("오디오 목록이 없습니다.")
-            return
+        # if not audio_files:
+        #     print("오디오 목록이 없습니다.")
+        #     return
         for audio_file in audio_files:
             self.metadata_handler.process_file(audio_file)
 

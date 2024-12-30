@@ -67,3 +67,14 @@
 - 에러 개선
 
 24.12.30 main.py 분리
+- main.py의 가독성과 기능 분리를 목적으로 interface.py, metadata.py, utils.py를 core 모듈로 분리.
+- metadata를 확인하기 위해 필요한 설정값은 전역변수로 사용기 위해 constants.py로 분리.
+- file_utils.py
+   - 오디오 목록 탐색
+   - 오디오 파일 경로 존재 여부 확인
+- menu_handler.py
+  1. show menu 선택지
+  2. process_all_files
+  3. process_single_file
+  4. get_audio_files
+- metadata_handler.py 수정필요
