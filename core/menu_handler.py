@@ -30,15 +30,12 @@ class MenuHandler:
     def process_all_files(self):
         """
         1. 오디오 파일 전체 메타데이터
-        :param
-        :return:
+        :param : audios_dir 음원 목록 경로
         """
         audio_files = self.get_audio_files()  # audios_dir을 주지 않아도 한 객체 내에 있기때문에 알아서 변수를 사용할 것이다.
-        # if not audio_files:
-        #     print("오디오 목록이 없습니다.")
-        #     return
         for audio_file in audio_files:
-            self.metadata_handler.process_file(audio_file)
+            print("audio_file", audio_file)
+            self.metadata_handler.read_audio_metadata(str(Path(audio_file)), audio_file)
 
     def process_single_file(self):
         """
@@ -46,6 +43,7 @@ class MenuHandler:
         :return:
         """
         audio_files = self.get_audio_files()
+
         if not audio_files:
             print("오디오 목록이 없습니다.")
             return
@@ -85,4 +83,7 @@ class MenuHandler:
             print("처리할 오디오 파일이 없습니다.")
             return []
 
+        print("\n오디오 파일 목록:")
+        for i, audio_file in enumerate(audio_files, start=1):
+            print(f"{i}. {audio_file}")
         return audio_files

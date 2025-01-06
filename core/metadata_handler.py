@@ -3,22 +3,23 @@ from constants import MAX_RECURSION_DEPTH  # 전역변수도 import로 불러올
 import os
 import subprocess
 import json
+from pathlib import Path
 
 class MetadataHandler:
     def __init__(self, audios_dir):
         self.max_depth = MAX_RECURSION_DEPTH
         self.audios_dir = audios_dir
 
-    def process_file(self, filepath: str) -> dict:
-        # 메타데이터 처리 로직
-        pass
+    # def process_file(self, filepath: str):
+    #     # 메타데이터 처리 로직
+    #     self.process_metadata(filepath)
 
     # Private 내부에서만 사용하는 함수이므로 은닉 함수로 전환
     def _handle_save(self, audio_dir, json_file_path: str) -> None:
         """메타데이터 저장
         :param json_file_path 저장할 오디오 파일의 메타데이터 파일명
         """
-        metadata = self.read_audio_metadata(audio_dir, audio_title=audio_dir)
+        metadata = self.read_audio_metadata(str(Path(audio_dir).resolve()), audio_title=audio_dir)
         self.create_metadata_json(metadata, json_file_path)
 
     def _handle_update(self, audio_dir, json_file_path: str) -> None:
@@ -55,7 +56,7 @@ class MetadataHandler:
             # self._handle_update(audio_dir, json_file_path)
             # self._handle_save(audio_dir, json_file_path)
         elif action == 'del':
-            handler(json_file_path)  # self._handle_delete(json_file_path)
+            handler(json_file_path) # self._handle_delete(json_file_path)
 
     def read_audio_metadata(self, audio_dir: str, audio_title: str) -> dict:
         """
@@ -66,11 +67,6 @@ class MetadataHandler:
         """
         cmd = ["ffprobe", "-v", "error", "-show_streams", "-of", "json", audio_dir]
         result = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
-
-        # ffprobe 명령이 실패할 경우 subprocess.run의 result.stderr에 에러 메시지
-        if result.returncode != 0:
-            print(f"ffprobe 실행 실패: 파일 경로가 잘못되었거나 지원되지 않는 형식일 수 있습니다.\n{result.stderr}")
-            return {}
 
         # JSON Parsing
         try:
@@ -83,7 +79,7 @@ class MetadataHandler:
                 print("스트림 정보가 없습니다. 오디오 파일인지 확인하세요.")
                 return {}
             metadata = streams[0]
-            self.print_metadata(metadata)
+            self.print_metadata(metadata, audio_title=audio_title)
             return metadata
 
         except json.JSONDecodeError:
@@ -134,7 +130,8 @@ class MetadataHandler:
         :return: None
         """
         # audio directory 통해서 메타데이터  한번 읽어주고
-        metadata = MetadataHandler.read_audio_metadata(audio_dir, audio_title=audio_dir)
+        print("audio_dir",audio_dir)
+        metadata = MetadataHandler.read_audio_metadata(str(Path(audio_dir).resolve()), audio_dir)
 
         if not metadata:
             print("오디오에서 메타데이터를 찾을 수 없습니다.")
@@ -211,6 +208,7 @@ class MetadataHandler:
         json_file_path = f"{input('메타데이터 파일(JSON) 경로: ').strip()}.json"
         self.process_metadata(audio_dir, metadata_action, json_file_path)
 
+    @staticmethod
     def print_metadata(metadata: dict, audio_title: str = "None") -> None:
         """
         오디오의 정제된 메타데이터와 오디오 제목을 출력
